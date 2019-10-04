@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="ef_colorPrimary" tools:override="true">#3F51B5</color>
+    <color name="ef_colorPrimaryDark" tools:override="true">#303F9F</color>
+    <color name="ef_colorAccent" tools:override="true">#FF4081</color>
+    <color name="ef_colorTextPrimary" tools:override="true">#FFFFFF</color>
+
+    <color name="ef_white">#FFFFFF</color>
+    <color name="ef_grey">#9E9E9E</color>
+    <color name="ef_black_alpha_50">#80000000</color>
+    <color name="ef_black_alpha_aa">#AA000000</color>
+    <color name="ef_teal">#009688</color>
+</resources>
