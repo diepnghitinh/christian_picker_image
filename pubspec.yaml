@@ -1,8 +1,8 @@
 name: christian_picker_image
 description: Flutter plugin for selecting images from the Android and iOS image library, and taking new pictures with the camera.
-version: 0.0.9
+version: 0.1.0
 author: Nguyen Phuc Nguyen <nguyen2242x@gmail.com>
-homepage: http://heycrm.com
+homepage: https://github.com/diepnghitinh/christian_picker_image
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

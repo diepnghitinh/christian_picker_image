@@ -1,3 +1,7 @@
+## 0.1.0
+
+* Update github homepage
+
 ## 0.0.9
 
 * Hot fix: Miss AndroidManifest.xml
