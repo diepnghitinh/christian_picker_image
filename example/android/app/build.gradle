@@ -38,7 +38,7 @@ android {
         applicationId "com.christian.christian_picker_image_example"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode flutterVersionCode.toInteger()
+        versionCode = flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -54,6 +54,7 @@ android {
         targetCompatibility = 1.8
         sourceCompatibility = 1.8
     }
+    buildToolsVersion = '27.0.3'
 }
 
 flutter {

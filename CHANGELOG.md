@@ -1,3 +1,7 @@
+## 0.0.9
+
+* Hot fix: Miss AndroidManifest.xml
+
 ## 0.0.8
 
 * Fix bug: Cancel button is crash app.
