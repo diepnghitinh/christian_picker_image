@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Support kotlin project
+
 ## 0.1.0
 
 * Update github homepage
