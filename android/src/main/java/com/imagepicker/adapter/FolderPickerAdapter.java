@@ -1,11 +1,12 @@
 package com.imagepicker.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.christian.christian_picker_image.R;
 import com.imagepicker.features.imageloader.ImageLoader;
