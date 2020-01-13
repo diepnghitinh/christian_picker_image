@@ -1,3 +1,15 @@
+## 0.1.4
+
+* hotfix crash app
+
+## 0.1.3
+
+* Migrate to Androidx
+
+## 0.1.2
+
+* Remove duplicate code
+
 ## 0.1.1
 
 * Support kotlin project
