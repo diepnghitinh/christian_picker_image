@@ -81,6 +81,7 @@ public class SwiftChristianPickerImagePlugin: NSObject, FlutterPlugin, ImagePick
             }
             
             let imagePicker = ImagePickerController(configuration: configuration)
+            imagePicker.modalPresentationStyle = .fullScreen
             imagePicker.delegate = self
             imagePicker.imageLimit = limit
             imagePicker.enableGestures(enableGestures);
