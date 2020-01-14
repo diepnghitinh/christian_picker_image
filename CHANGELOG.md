@@ -1,3 +1,7 @@
+## 0.1.5
+
+* IOS fullscreen picker
+
 ## 0.1.4
 
 * hotfix crash app
