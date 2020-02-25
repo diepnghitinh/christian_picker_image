@@ -16,6 +16,8 @@ public class SwiftChristianPickerImagePlugin: NSObject, FlutterPlugin, ImagePick
         }
         
         let lightbox = LightboxController(images: lightboxImages, startIndex: 0)
+
+        lightbox.modalPresentationStyle = .fullScreen
         lightbox.dynamicBackground = false
         LightboxConfig.CloseButton.text = "Close"
         imagePicker.present(lightbox, animated: true, completion: nil)
