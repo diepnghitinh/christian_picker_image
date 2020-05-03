@@ -76,7 +76,7 @@ class ChristianPickerImagePlugin : MethodCallHandler, PluginRegistry.ActivityRes
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Boolean {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
 
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
             // Get a list of picked images
