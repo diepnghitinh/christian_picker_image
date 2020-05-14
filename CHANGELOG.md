@@ -1,3 +1,7 @@
+## 0.1.7
+
+* Fix icloud image
+
 ## 0.1.6
 
 * Fix close button
