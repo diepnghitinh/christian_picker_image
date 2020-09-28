@@ -1,3 +1,12 @@
+## 0.1.8
+
+* Up deployment_target to 11.0
+
+## 0.1.7
+
+* Fix icloud image
+
+>>>>>>> Stashed changes
 ## 0.1.6
 
 * Fix close button
