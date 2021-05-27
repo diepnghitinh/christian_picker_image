@@ -4,8 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
 
@@ -13,7 +17,6 @@ import com.imagepicker.features.ImagePickerSavePath;
 import com.imagepicker.model.Image;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,12 +29,19 @@ public class ImagePickerUtils {
         return str == null || str.length() == 0;
     }
 
-    public static File createImageFile(ImagePickerSavePath savePath) {
+    private static File createFileInDirectory(ImagePickerSavePath savePath, Context context) {
         // External sdcard location
         final String path = savePath.getPath();
-        File mediaStorageDir = savePath.isFullPath()
-                ? new File(path)
-                : new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), path);
+
+        File mediaStorageDir;
+        if (savePath.isFullPath()) {
+            mediaStorageDir = new File(path);
+        } else {
+            File parent = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                    ? context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                    : Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            mediaStorageDir = new File(parent, path);
+        }
 
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists()) {
@@ -41,17 +51,22 @@ public class ImagePickerUtils {
             }
         }
 
-        // Create a media file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String imageFileName = "IMG_" + timeStamp;
+        return mediaStorageDir;
+    }
 
-        File imageFile = null;
-        try {
-            imageFile = File.createTempFile(imageFileName, ".jpg", mediaStorageDir);
-        } catch (IOException e) {
-            IpLogger.getInstance().d("Oops! Failed create " + imageFileName + " file");
+    public static File createImageFile(ImagePickerSavePath savePath, Context context) {
+        final File mediaStorageDir = createFileInDirectory(savePath, context);
+        if (mediaStorageDir == null) return null;
+
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss_SSS", Locale.getDefault()).format(new Date());
+        File result = new File(mediaStorageDir, "IMG_" + timeStamp + ".jpg");
+        int counter = 0;
+        while (result.exists()) {
+            counter++;
+            result = new File(mediaStorageDir, "IMG_" + timeStamp + "(" + counter + ").jpg");
         }
-        return imageFile;
+        return result;
     }
 
     public static String getNameFromFilePath(String path) {
@@ -78,12 +93,46 @@ public class ImagePickerUtils {
     }
 
     public static boolean isGifFormat(Image image) {
-        String extension = image.getPath().substring(image.getPath().lastIndexOf(".") + 1, image.getPath().length());
+        return isGifFormat(image.getPath());
+    }
+
+    public static boolean isGifFormat(String path) {
+        String extension = getExtension(path);
         return extension.equalsIgnoreCase("gif");
     }
 
     public static boolean isVideoFormat(Image image) {
-        String mimeType = URLConnection.guessContentTypeFromName(image.getPath());
+        String extension = getExtension(image.getPath());
+        String mimeType = TextUtils.isEmpty(extension)
+                ? URLConnection.guessContentTypeFromName(image.getPath())
+                : MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
         return mimeType != null && mimeType.startsWith("video");
+    }
+
+    public static String getVideoDurationLabel(Context context, Uri uri) {
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(context, uri);
+        Long duration = Long.parseLong(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+        retriever.release();
+        long second = (duration / 1000) % 60;
+        long minute = (duration / (1000 * 60)) % 60;
+        long hour = (duration / (1000 * 60 * 60)) % 24;
+        if (hour > 0) {
+            return String.format("%02d:%02d:%02d", hour, minute, second);
+        } else {
+            return String.format("%02d:%02d", minute, second);
+        }
+    }
+
+    private static String getExtension(String path) {
+        String extension = MimeTypeMap.getFileExtensionFromUrl(path);
+        if (!TextUtils.isEmpty(extension)) {
+            return extension;
+        }
+        if (path.contains(".")) {
+            return path.substring(path.lastIndexOf(".") + 1, path.length());
+        } else {
+            return "";
+        }
     }
 }

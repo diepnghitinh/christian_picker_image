@@ -1,12 +1,14 @@
-package com.imagepicker.features;
+package com.imagepicker.features.fileloader;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.MediaStore;
 
 import androidx.annotation.Nullable;
 
 import com.imagepicker.features.common.ImageLoaderListener;
+import com.imagepicker.helper.ImagePickerUtils;
 import com.imagepicker.model.Folder;
 import com.imagepicker.model.Image;
 
@@ -18,13 +20,13 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ImageFileLoader {
+public class DefaultImageFileLoader implements ImageFileLoader {
 
     private Context context;
     private ExecutorService executorService;
 
-    public ImageFileLoader(Context context) {
-        this.context = context;
+    public DefaultImageFileLoader(Context context) {
+        this.context = context.getApplicationContext();
     }
 
     private final String[] projection = new String[]{
@@ -34,10 +36,27 @@ public class ImageFileLoader {
             MediaStore.Images.Media.BUCKET_DISPLAY_NAME
     };
 
-    public void loadDeviceImages(final boolean isFolderMode, final boolean includeVideo, final ArrayList<File> excludedImages, final ImageLoaderListener listener) {
-        getExecutorService().execute(new ImageLoadRunnable(isFolderMode, includeVideo, excludedImages, listener));
+    @Override
+    public void loadDeviceImages(
+            final boolean isFolderMode,
+            final boolean onlyVideo,
+            final boolean includeVideo,
+            final boolean includeAnimation,
+            final ArrayList<File> excludedImages,
+            final ImageLoaderListener listener
+    ) {
+        getExecutorService().execute(
+                new ImageLoadRunnable(
+                        isFolderMode,
+                        onlyVideo,
+                        includeVideo,
+                        includeAnimation,
+                        excludedImages,
+                        listener
+                ));
     }
 
+    @Override
     public void abortLoadImages() {
         if (executorService != null) {
             executorService.shutdown();
@@ -56,31 +75,52 @@ public class ImageFileLoader {
 
         private boolean isFolderMode;
         private boolean includeVideo;
+        private boolean onlyVideo;
+        private boolean includeAnimation;
         private ArrayList<File> exlucedImages;
         private ImageLoaderListener listener;
 
-        public ImageLoadRunnable(boolean isFolderMode, boolean includeVideo, ArrayList<File> excludedImages, ImageLoaderListener listener) {
+        ImageLoadRunnable(
+                boolean isFolderMode,
+                boolean onlyVideo,
+                boolean includeVideo,
+                boolean includeAnimation,
+                ArrayList<File> excludedImages,
+                ImageLoaderListener listener
+        ) {
             this.isFolderMode = isFolderMode;
             this.includeVideo = includeVideo;
+            this.includeAnimation = includeAnimation;
+            this.onlyVideo = onlyVideo;
             this.exlucedImages = excludedImages;
             this.listener = listener;
         }
 
-        @Override
-        public void run() {
-            Cursor cursor;
+        private String getQuerySelection() {
+            if (onlyVideo) {
+                return MediaStore.Files.FileColumns.MEDIA_TYPE + "="
+                        + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
+            }
             if (includeVideo) {
-                String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
+                return MediaStore.Files.FileColumns.MEDIA_TYPE + "="
                         + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE + " OR "
                         + MediaStore.Files.FileColumns.MEDIA_TYPE + "="
                         + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
-
-                cursor = context.getContentResolver().query(MediaStore.Files.getContentUri("external"), projection,
-                        selection, null, MediaStore.Images.Media.DATE_ADDED);
-            } else {
-                cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection,
-                        null, null, MediaStore.Images.Media.DATE_ADDED);
             }
+            return null;
+        }
+
+        private Uri getSourceUri() {
+            if (onlyVideo || includeVideo) {
+                return MediaStore.Files.getContentUri("external");
+            }
+            return MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        }
+
+        @Override
+        public void run() {
+            Cursor cursor = context.getContentResolver().query(getSourceUri(), projection,
+                    getQuerySelection(), null, MediaStore.Images.Media.DATE_ADDED);
 
             if (cursor == null) {
                 listener.onFailed(new NullPointerException());
@@ -95,20 +135,38 @@ public class ImageFileLoader {
 
             if (cursor.moveToLast()) {
                 do {
-                    long id = cursor.getLong(cursor.getColumnIndex(projection[0]));
-                    String name = cursor.getString(cursor.getColumnIndex(projection[1]));
                     String path = cursor.getString(cursor.getColumnIndex(projection[2]));
-                    String bucket = cursor.getString(cursor.getColumnIndex(projection[3]));
 
                     File file = makeSafeFile(path);
-                    if (file != null) {
-                        if (exlucedImages != null && exlucedImages.contains(file))
-                            continue;
+                    if (file == null) {
+                        continue;
+                    }
 
+                    if (exlucedImages != null && exlucedImages.contains(file))
+                        continue;
+
+                    // Exclude GIF when we don't want it
+                    if (!includeAnimation) {
+                        if (ImagePickerUtils.isGifFormat(path)) {
+                            continue;
+                        }
+                    }
+
+                    long id = cursor.getLong(cursor.getColumnIndex(projection[0]));
+                    String name = cursor.getString(cursor.getColumnIndex(projection[1]));
+                    String bucket = cursor.getString(cursor.getColumnIndex(projection[3]));
+                    if (bucket == null) {
+                        File parent = new File(path).getParentFile();
+                        if (parent != null) {
+                            bucket = parent.getName();
+                        } else {
+                            bucket = "SDCARD";
+                        }
+                    }
+                    if (name != null) {
                         Image image = new Image(id, name, path);
                         temp.add(image);
-
-                        if (folderMap != null) {
+                        if (folderMap != null && bucket != null) {
                             Folder folder = folderMap.get(bucket);
                             if (folder == null) {
                                 folder = new Folder(bucket);

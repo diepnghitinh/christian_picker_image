@@ -1,7 +1,6 @@
 package com.imagepicker.features;
 
 import com.imagepicker.features.cameraonly.CameraOnlyConfig;
-import com.imagepicker.features.imageloader.DefaultImageLoader;
 
 import java.util.ArrayList;
 
@@ -11,6 +10,7 @@ public class ImagePickerConfigFactory {
         CameraOnlyConfig config = new CameraOnlyConfig();
         config.setSavePath(ImagePickerSavePath.DEFAULT);
         config.setReturnMode(ReturnMode.ALL);
+        config.setSaveImage(true);
         return config;
     }
 
@@ -23,7 +23,7 @@ public class ImagePickerConfigFactory {
         config.setSelectedImages(new ArrayList<>());
         config.setSavePath(ImagePickerSavePath.DEFAULT);
         config.setReturnMode(ReturnMode.NONE);
-        config.setImageLoader(new DefaultImageLoader());
+        config.setSaveImage(true);
         return config;
     }
 }

@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import androidx.annotation.StyleRes;
 
 import com.imagepicker.features.common.BaseConfig;
+import com.imagepicker.features.fileloader.ImageFileLoader;
 import com.imagepicker.features.imageloader.ImageLoader;
 import com.imagepicker.model.Image;
 
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 
 public class ImagePickerConfig extends BaseConfig implements Parcelable {
 
-    static final int NO_COLOR = -1;
+    public static final int NO_COLOR = -1;
 
     private ArrayList<Image> selectedImages;
     private ArrayList<File> excludedImages;
@@ -30,9 +31,9 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
 
     private boolean folderMode;
     private boolean includeVideo;
+    private boolean onlyVideo;
+    private boolean includeAnimation;
     private boolean showCamera;
-
-    private ImageLoader imageLoader;
 
     private transient String language;
 
@@ -77,6 +78,22 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
 
     public void setIncludeVideo(boolean includeVideo) {
         this.includeVideo = includeVideo;
+    }
+
+    public boolean isOnlyVideo() {
+        return onlyVideo;
+    }
+
+    public void setOnlyVideo(boolean onlyVideo) {
+        this.onlyVideo = onlyVideo;
+    }
+
+    public boolean isIncludeAnimation() {
+        return includeAnimation;
+    }
+
+    public void setIncludeAnimation(boolean includeAnimation) {
+        this.includeAnimation = includeAnimation;
     }
 
     public String getFolderTitle() {
@@ -146,14 +163,6 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
         return theme;
     }
 
-    public void setImageLoader(ImageLoader imageLoader) {
-        this.imageLoader = imageLoader;
-    }
-
-    public ImageLoader getImageLoader() {
-        return imageLoader;
-    }
-
     public void setLanguage(String language) {
         this.language = language;
     }
@@ -190,8 +199,9 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
         dest.writeInt(this.theme);
         dest.writeByte(this.folderMode ? (byte) 1 : (byte) 0);
         dest.writeByte(this.includeVideo ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.onlyVideo ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.includeAnimation ? (byte) 1 : (byte) 0);
         dest.writeByte(this.showCamera ? (byte) 1 : (byte) 0);
-        dest.writeSerializable(this.imageLoader);
     }
 
     protected ImagePickerConfig(Parcel in) {
@@ -213,8 +223,9 @@ public class ImagePickerConfig extends BaseConfig implements Parcelable {
         this.theme = in.readInt();
         this.folderMode = in.readByte() != 0;
         this.includeVideo = in.readByte() != 0;
+        this.onlyVideo = in.readByte() != 0;
+        this.includeAnimation = in.readByte() != 0;
         this.showCamera = in.readByte() != 0;
-        this.imageLoader = (ImageLoader) in.readSerializable();
     }
 
     public static final Creator<ImagePickerConfig> CREATOR = new Creator<ImagePickerConfig>() {

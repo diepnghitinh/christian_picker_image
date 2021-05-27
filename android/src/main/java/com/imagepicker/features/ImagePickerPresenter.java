@@ -1,10 +1,12 @@
 package com.imagepicker.features;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+
+import androidx.fragment.app.Fragment;
+
 import android.widget.Toast;
 
 import com.christian.christian_picker_image.R;
@@ -12,6 +14,7 @@ import com.imagepicker.features.camera.DefaultCameraModule;
 import com.imagepicker.features.common.BaseConfig;
 import com.imagepicker.features.common.BasePresenter;
 import com.imagepicker.features.common.ImageLoaderListener;
+import com.imagepicker.features.fileloader.DefaultImageFileLoader;
 import com.imagepicker.helper.ConfigUtils;
 import com.imagepicker.model.Folder;
 import com.imagepicker.model.Image;
@@ -22,11 +25,11 @@ import java.util.List;
 
 class ImagePickerPresenter extends BasePresenter<ImagePickerView> {
 
-    private ImageFileLoader imageLoader;
+    private DefaultImageFileLoader imageLoader;
     private DefaultCameraModule cameraModule;
     private Handler main = new Handler(Looper.getMainLooper());
 
-    ImagePickerPresenter(ImageFileLoader imageLoader) {
+    ImagePickerPresenter(DefaultImageFileLoader imageLoader) {
         this.imageLoader = imageLoader;
     }
 
@@ -51,11 +54,13 @@ class ImagePickerPresenter extends BasePresenter<ImagePickerView> {
 
         boolean isFolder = config.isFolderMode();
         boolean includeVideo = config.isIncludeVideo();
+        boolean onlyVideo = config.isOnlyVideo();
+        boolean includeAnimation = config.isIncludeAnimation();
         ArrayList<File> excludedImages = config.getExcludedImages();
 
         runOnUiIfAvailable(() -> getView().showLoading(true));
 
-        imageLoader.loadDeviceImages(isFolder, includeVideo, excludedImages, new ImageLoaderListener() {
+        imageLoader.loadDeviceImages(isFolder, onlyVideo, includeVideo, includeAnimation, excludedImages, new ImageLoaderListener() {
             @Override
             public void onImageLoaded(final List<Image> images, final List<Folder> folders) {
                 runOnUiIfAvailable(() -> {
@@ -96,14 +101,14 @@ class ImagePickerPresenter extends BasePresenter<ImagePickerView> {
         }
     }
 
-    void captureImage(Activity activity, BaseConfig config, int requestCode) {
-        Context context = activity.getApplicationContext();
-        Intent intent = getCameraModule().getCameraIntent(activity, config);
+    void captureImage(Fragment fragment, BaseConfig config, int requestCode) {
+        Context context = fragment.getActivity().getApplicationContext();
+        Intent intent = getCameraModule().getCameraIntent(fragment.getActivity(), config);
         if (intent == null) {
             Toast.makeText(context, context.getString(R.string.ef_error_create_image_file), Toast.LENGTH_LONG).show();
             return;
         }
-        activity.startActivityForResult(intent, requestCode);
+        fragment.startActivityForResult(intent, requestCode);
     }
 
     void finishCaptureImage(Context context, Intent data, final BaseConfig config) {
