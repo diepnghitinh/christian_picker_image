@@ -1,3 +1,11 @@
+## 0.1.10
+* fix issue #20
+
+## 0.1.9
+
+* Fix android 11
+* Use ext.kotlin_version = '1.4.32'
+
 ## 0.1.8
 
 * Up deployment_target to 11.0
@@ -6,7 +14,6 @@
 
 * Fix icloud image
 
->>>>>>> Stashed changes
 ## 0.1.6
 
 * Fix close button
