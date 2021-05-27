@@ -5,12 +5,10 @@ import android.content.res.Configuration;
 import android.os.Parcelable;
 import android.widget.Toast;
 
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.christian.christian_picker_image.R;
 import com.imagepicker.adapter.FolderPickerAdapter;
 import com.imagepicker.adapter.ImagePickerAdapter;
+import com.imagepicker.features.ImagePickerComponentHolder;
 import com.imagepicker.features.ImagePickerConfig;
 import com.imagepicker.features.ReturnMode;
 import com.imagepicker.features.imageloader.ImageLoader;
@@ -25,6 +23,9 @@ import com.imagepicker.view.GridSpacingItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import static com.imagepicker.features.IpCons.MAX_LIMIT;
 import static com.imagepicker.features.IpCons.MODE_MULTIPLE;
@@ -54,6 +55,14 @@ public class RecyclerViewManager {
         changeOrientation(orientation);
     }
 
+    public void onRestoreState(Parcelable recyclerState) {
+        layoutManager.onRestoreInstanceState(recyclerState);
+    }
+
+    public Parcelable getRecyclerState() {
+        return layoutManager.onSaveInstanceState();
+    }
+
     /**
      * Set item size, column size base on the screen orientation
      */
@@ -69,14 +78,12 @@ public class RecyclerViewManager {
         setItemDecoration(columns);
     }
 
-    public void setupAdapters(OnImageClickListener onImageClickListener, OnFolderClickListener onFolderClickListener) {
-        ArrayList<Image> selectedImages = null;
-        if (config.getMode() == MODE_MULTIPLE && !config.getSelectedImages().isEmpty()) {
-            selectedImages = config.getSelectedImages();
+    public void setupAdapters(ArrayList<Image> selectedImages, OnImageClickListener onImageClickListener, OnFolderClickListener onFolderClickListener) {
+        if (config.getMode() == MODE_SINGLE && selectedImages != null && selectedImages.size() > 1) {
+            selectedImages = null;
         }
-
         /* Init folder and image adapter */
-        final ImageLoader imageLoader = config.getImageLoader();
+        final ImageLoader imageLoader = ImagePickerComponentHolder.getInstance().getImageLoader();
         imageAdapter = new ImagePickerAdapter(context, imageLoader, selectedImages, onImageClickListener);
         folderAdapter = new FolderPickerAdapter(context, imageLoader, bucket -> {
             foldersState = recyclerView.getLayoutManager().onSaveInstanceState();
@@ -98,13 +105,13 @@ public class RecyclerViewManager {
         layoutManager.setSpanCount(columns);
     }
 
-    public void handleBack(OnBackAction action) {
+    // Returns true if a back action was handled by going back a folder; false otherwise.
+    public boolean handleBack() {
         if (config.isFolderMode() && !isDisplayingFolderView()) {
             setFolderAdapter(null);
-            action.onBackToFolder();
-            return;
+            return true;
         }
-        action.onFinishImagePicker();
+        return false;
     }
 
     private boolean isDisplayingFolderView() {

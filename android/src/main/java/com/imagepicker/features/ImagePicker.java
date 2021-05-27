@@ -4,13 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.StyleRes;
-import androidx.fragment.app.Fragment;
-
 import com.imagepicker.features.cameraonly.ImagePickerCameraOnly;
-import com.imagepicker.features.imageloader.ImageLoader;
 import com.imagepicker.helper.ConfigUtils;
 import com.imagepicker.helper.IpLogger;
 import com.imagepicker.helper.LocaleManager;
@@ -19,6 +13,11 @@ import com.imagepicker.model.Image;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.StyleRes;
+import androidx.fragment.app.Fragment;
 
 public abstract class ImagePicker {
 
@@ -34,7 +33,7 @@ public abstract class ImagePicker {
 
         public ImagePickerWithActivity(Activity activity) {
             this.activity = activity;
-            init();
+            init(activity);
         }
 
         @Override
@@ -54,7 +53,7 @@ public abstract class ImagePicker {
 
         public ImagePickerWithFragment(Fragment fragment) {
             this.fragment = fragment;
-            init();
+            init(fragment.requireContext());
         }
 
         @Override
@@ -72,7 +71,7 @@ public abstract class ImagePicker {
     /* > Stater */
     /* --------------------------------------------------- */
 
-    public void init() {
+    public void init(Context context) {
         config = ImagePickerConfigFactory.createDefault();
     }
 
@@ -104,6 +103,11 @@ public abstract class ImagePicker {
 
     public ImagePicker returnMode(@NonNull ReturnMode returnMode) {
         config.setReturnMode(returnMode);
+        return this;
+    }
+
+    public ImagePicker saveImage(boolean saveImage) {
+        config.setSaveImage(saveImage);
         return this;
     }
 
@@ -163,6 +167,16 @@ public abstract class ImagePicker {
         return this;
     }
 
+    public ImagePicker onlyVideo(boolean onlyVideo) {
+        config.setOnlyVideo(onlyVideo);
+        return this;
+    }
+
+    public ImagePicker includeAnimation(boolean includeAnimation) {
+        config.setIncludeAnimation(includeAnimation);
+        return this;
+    }
+
     public ImagePicker imageDirectory(String directory) {
         config.setImageDirectory(directory);
         return this;
@@ -178,11 +192,6 @@ public abstract class ImagePicker {
         return this;
     }
 
-    public ImagePicker imageLoader(ImageLoader imageLoader) {
-        config.setImageLoader(imageLoader);
-        return this;
-    }
-
     public ImagePicker enableLog(boolean isEnable) {
         IpLogger.getInstance().setEnable(isEnable);
         return this;
@@ -193,13 +202,13 @@ public abstract class ImagePicker {
         return this;
     }
 
-    protected ImagePickerConfig getConfig() {
-        LocaleManager.setLanguange(config.getLanguage());
-        return config;
+    public ImagePickerConfig getConfig() {
+        LocaleManager.setLanguage(config.getLanguage());
+        return ConfigUtils.checkConfig(config);
     }
 
     public Intent getIntent(Context context) {
-        ImagePickerConfig config = ConfigUtils.checkConfig(getConfig());
+        ImagePickerConfig config = getConfig();
         Intent intent = new Intent(context, ImagePickerActivity.class);
         intent.putExtra(ImagePickerConfig.class.getSimpleName(), config);
         return intent;

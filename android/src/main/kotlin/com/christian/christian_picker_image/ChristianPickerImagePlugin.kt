@@ -16,7 +16,7 @@ import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import io.flutter.view.FlutterView
 
-import com.imagepicker.features.ImagePicker;
+import com.imagepicker.features.ImagePicker
 import com.imagepicker.model.Image
 
 /**
