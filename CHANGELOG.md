@@ -1,3 +1,6 @@
+## 0.1.11
+* fix pubspec.yaml
+
 ## 0.1.10
 * fix issue #20
 
