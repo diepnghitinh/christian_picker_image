@@ -1,3 +1,9 @@
+## 0.1.12
+* fix ios for pubspec.yaml
+
+## 0.1.11
+* fix pubspec.yaml
+
 ## 0.1.11
 * fix pubspec.yaml
 
