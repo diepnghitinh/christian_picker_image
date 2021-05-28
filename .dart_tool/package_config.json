@@ -131,10 +131,10 @@
       "name": "christian_picker_image",
       "rootUri": "../",
       "packageUri": "lib/",
-      "languageVersion": "2.1"
+      "languageVersion": "2.10"
     }
   ],
-  "generated": "2021-05-27T01:16:27.552140Z",
+  "generated": "2021-05-28T06:42:36.792834Z",
   "generator": "pub",
   "generatorVersion": "2.10.5"
 }

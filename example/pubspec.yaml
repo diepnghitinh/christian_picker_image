@@ -2,8 +2,10 @@ name: christian_picker_image_example
 description: Demonstrates how to use the christian_picker_image plugin.
 publish_to: 'none'
 
+version: 0.1.11
+
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.10.0 <3.0.0"
 
 dependencies:
   flutter:
