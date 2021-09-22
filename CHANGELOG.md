@@ -1,3 +1,6 @@
+## 0.1.13
+* fix build on Xcode 12 , 13
+
 ## 0.1.12
 * fix ios for pubspec.yaml
 
