@@ -14,7 +14,7 @@ open class TopView: UIView {
     static let height: CGFloat = 34
   }
 
-  var configuration = Configuration()
+  var configurations = Configurations()
 
   var currentFlashIndex = 0
   let flashButtonTitles = ["AUTO", "ON", "OFF"]
@@ -26,7 +26,7 @@ open class TopView: UIView {
     button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 0)
     button.setTitleColor(UIColor.white, for: UIControl.State())
     button.setTitleColor(UIColor.white, for: .highlighted)
-    button.titleLabel?.font = self.configuration.flashButton
+    button.titleLabel?.font = self.configurations.flashButton
     button.addTarget(self, action: #selector(flashButtonDidPress(_:)), for: .touchUpInside)
     button.contentHorizontalAlignment = .left
     button.accessibilityLabel = "Flash mode is auto"
@@ -50,9 +50,9 @@ open class TopView: UIView {
 
   // MARK: - Initializers
 
-  public init(configuration: Configuration? = nil) {
-    if let configuration = configuration {
-      self.configuration = configuration
+  public init(configurations: Configurations? = nil) {
+    if let configurations = configurations {
+      self.configurations = configurations
     }
     super.init(frame: .zero)
     configure()
@@ -70,7 +70,7 @@ open class TopView: UIView {
   func configure() {
     var buttons: [UIButton] = [flashButton]
 
-    if configuration.canRotateCamera {
+    if configurations.canRotateCamera {
       buttons.append(rotateCamera)
     }
 
@@ -83,7 +83,7 @@ open class TopView: UIView {
       addSubview(button)
     }
 
-    flashButton.isHidden = configuration.flashButtonAlwaysHidden
+    flashButton.isHidden = configurations.flashButtonAlwaysHidden
 
     setupConstraints()
   }

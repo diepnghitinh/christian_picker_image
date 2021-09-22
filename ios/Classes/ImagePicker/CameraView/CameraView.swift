@@ -11,7 +11,7 @@ protocol CameraViewDelegate: class {
 
 class CameraView: UIViewController, CLLocationManagerDelegate, CameraManDelegate {
 
-  var configuration = Configuration()
+  var configurations = Configurations()
 
   lazy var blurView: UIVisualEffectView = { [unowned self] in
     let effect = UIBlurEffect(style: .dark)
@@ -47,9 +47,9 @@ class CameraView: UIViewController, CLLocationManagerDelegate, CameraManDelegate
 
   lazy var noCameraLabel: UILabel = { [unowned self] in
     let label = UILabel()
-    label.font = self.configuration.noCameraFont
-    label.textColor = self.configuration.noCameraColor
-    label.text = self.configuration.noCameraTitle
+    label.font = self.configurations.noCameraFont
+    label.textColor = self.configurations.noCameraColor
+    label.text = self.configurations.noCameraTitle
     label.sizeToFit()
 
     return label
@@ -57,16 +57,16 @@ class CameraView: UIViewController, CLLocationManagerDelegate, CameraManDelegate
 
   lazy var noCameraButton: UIButton = { [unowned self] in
     let button = UIButton(type: .system)
-    let title = NSAttributedString(string: self.configuration.settingsTitle,
+    let title = NSAttributedString(string: self.configurations.settingsTitle,
       attributes: [
-        NSAttributedString.Key.font: self.configuration.settingsFont,
-        NSAttributedString.Key.foregroundColor: self.configuration.settingsColor
+        NSAttributedString.Key.font: self.configurations.settingsFont,
+        NSAttributedString.Key.foregroundColor: self.configurations.settingsColor
       ])
 
     button.setAttributedTitle(title, for: UIControl.State())
     button.contentEdgeInsets = UIEdgeInsets(top: 5.0, left: 10.0, bottom: 5.0, right: 10.0)
     button.sizeToFit()
-    button.layer.borderColor = self.configuration.settingsColor.cgColor
+    button.layer.borderColor = self.configurations.settingsColor.cgColor
     button.layer.borderWidth = 1
     button.layer.cornerRadius = 4
     button.addTarget(self, action: #selector(settingsButtonDidTap), for: .touchUpInside)
@@ -102,9 +102,9 @@ class CameraView: UIViewController, CLLocationManagerDelegate, CameraManDelegate
   private var currentZoomFactor: CGFloat = 1.0
   private var previousZoomFactor: CGFloat = 1.0
 
-  public init(configuration: Configuration? = nil) {
-    if let configuration = configuration {
-      self.configuration = configuration
+  public init(configurations: Configurations? = nil) {
+    if let configurations = configurations {
+      self.configurations = configurations
     }
     super.init(nibName: nil, bundle: nil)
   }
@@ -116,11 +116,11 @@ class CameraView: UIViewController, CLLocationManagerDelegate, CameraManDelegate
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    if configuration.recordLocation {
+    if configurations.recordLocation {
       locationManager = LocationManager()
     }
 
-    view.backgroundColor = configuration.mainColor
+    view.backgroundColor = configurations.mainColor
 
     view.addSubview(containerView)
     containerView.addSubview(blurView)
@@ -131,7 +131,7 @@ class CameraView: UIViewController, CLLocationManagerDelegate, CameraManDelegate
 
     view.addGestureRecognizer(tapGestureRecognizer)
 
-    if configuration.allowPinchToZoom {
+    if configurations.allowPinchToZoom {
       view.addGestureRecognizer(pinchGestureRecognizer)
     }
 
@@ -154,7 +154,7 @@ class CameraView: UIViewController, CLLocationManagerDelegate, CameraManDelegate
   func setupPreviewLayer() {
     let layer = AVCaptureVideoPreviewLayer(session: cameraMan.session)
 
-    layer.backgroundColor = configuration.mainColor.cgColor
+    layer.backgroundColor = configurations.mainColor.cgColor
     layer.autoreverses = true
     layer.videoGravity = AVLayerVideoGravity.resizeAspectFill
 
@@ -312,7 +312,7 @@ class CameraView: UIViewController, CLLocationManagerDelegate, CameraManDelegate
   }
 
   func cameraMan(_ cameraMan: CameraMan, didChangeInput input: AVCaptureDeviceInput) {
-    if !configuration.flashButtonAlwaysHidden {
+    if !configurations.flashButtonAlwaysHidden {
       delegate?.setFlashButtonHidden(!input.device.hasFlash)
     }
   }

@@ -13,12 +13,12 @@ class ButtonPicker: UIButton {
     static let buttonBorderSize: CGFloat = 68
   }
 
-  var configuration = Configuration()
+  var configurations = Configurations()
 
   lazy var numberLabel: UILabel = { [unowned self] in
     let label = UILabel()
     label.translatesAutoresizingMaskIntoConstraints = false
-    label.font = self.configuration.numberLabelFont
+    label.font = self.configurations.numberLabelFont
 
     return label
     }()
@@ -27,9 +27,9 @@ class ButtonPicker: UIButton {
 
   // MARK: - Initializers
 
-  public init(configuration: Configuration? = nil) {
-    if let configuration = configuration {
-      self.configuration = configuration
+  public init(configurations: Configurations? = nil) {
+    if let configurations = configurations {
+      self.configurations = configurations
     }
     super.init(frame: .zero)
     configure()
@@ -73,7 +73,7 @@ class ButtonPicker: UIButton {
     fatalError("init(coder:) has not been implemented")
   }
 
-  // MARK: - Configuration
+  // MARK: - Configurations
 
   func setupButton() {
     backgroundColor = UIColor.white

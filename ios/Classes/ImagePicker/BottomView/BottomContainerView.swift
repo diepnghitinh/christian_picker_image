@@ -14,13 +14,13 @@ open class BottomContainerView: UIView {
     static let height: CGFloat = 101
   }
 
-  var configuration = Configuration()
+  var configurations = Configurations()
 
   lazy var pickerButton: ButtonPicker = { [unowned self] in
-    let pickerButton = ButtonPicker(configuration: self.configuration)
+    let pickerButton = ButtonPicker(configurations: self.configurations)
     pickerButton.setTitleColor(UIColor.white, for: UIControl.State())
     pickerButton.delegate = self
-    pickerButton.numberLabel.isHidden = !self.configuration.showsImageCountLabel
+    pickerButton.numberLabel.isHidden = !self.configurations.showsImageCountLabel
 
     return pickerButton
     }()
@@ -37,8 +37,8 @@ open class BottomContainerView: UIView {
 
   open lazy var doneButton: UIButton = { [unowned self] in
     let button = UIButton()
-    button.setTitle(self.configuration.cancelButtonTitle, for: UIControl.State())
-    button.titleLabel?.font = self.configuration.doneButton
+    button.setTitle(self.configurations.cancelButtonTitle, for: UIControl.State())
+    button.titleLabel?.font = self.configurations.doneButton
     button.addTarget(self, action: #selector(doneButtonDidPress(_:)), for: .touchUpInside)
 
     return button
@@ -48,7 +48,7 @@ open class BottomContainerView: UIView {
 
   lazy var topSeparator: UIView = { [unowned self] in
     let view = UIView()
-    view.backgroundColor = self.configuration.backgroundColor
+    view.backgroundColor = self.configurations.backgroundColor
 
     return view
     }()
@@ -65,9 +65,9 @@ open class BottomContainerView: UIView {
 
   // MARK: Initializers
 
-  public init(configuration: Configuration? = nil) {
-    if let configuration = configuration {
-      self.configuration = configuration
+  public init(configurations: Configurations? = nil) {
+    if let configurations = configurations {
+      self.configurations = configurations
     }
     super.init(frame: .zero)
     configure()
@@ -83,7 +83,7 @@ open class BottomContainerView: UIView {
       $0.translatesAutoresizingMaskIntoConstraints = false
     }
 
-    backgroundColor = configuration.backgroundColor
+    backgroundColor = configurations.backgroundColor
     stackView.accessibilityLabel = "Image stack"
     stackView.addGestureRecognizer(tapGestureRecognizer)
 
@@ -93,7 +93,7 @@ open class BottomContainerView: UIView {
   // MARK: - Action methods
 
   @objc func doneButtonDidPress(_ button: UIButton) {
-    if button.currentTitle == configuration.cancelButtonTitle {
+    if button.currentTitle == configurations.cancelButtonTitle {
       delegate?.cancelButtonDidPress()
     } else {
       delegate?.doneButtonDidPress()

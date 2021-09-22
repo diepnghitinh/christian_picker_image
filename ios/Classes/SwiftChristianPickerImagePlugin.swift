@@ -67,8 +67,8 @@ public class SwiftChristianPickerImagePlugin: NSObject, FlutterPlugin, ImagePick
         
         self.imagesResult = result
         
-        let configuration = Configuration()
-        configuration.recordLocation = false
+        let configurations = Configurations()
+        configurations.recordLocation = false
         
         //let limit = maxImages - self.arrImage.count
         switch (call.method) {
@@ -82,7 +82,7 @@ public class SwiftChristianPickerImagePlugin: NSObject, FlutterPlugin, ImagePick
                 return
             }
             
-            let imagePicker = ImagePickerController(configuration: configuration)
+            let imagePicker = ImagePickerController(configurations: configurations)
             imagePicker.modalPresentationStyle = .fullScreen
             imagePicker.delegate = self
             imagePicker.imageLimit = limit

@@ -26,13 +26,13 @@ open class ImageGalleryView: UIView {
     static let galleryBarHeight: CGFloat = 24
   }
 
-  var configuration = Configuration()
+  var configurations = Configurations()
 
   lazy open var collectionView: UICollectionView = { [unowned self] in
     let collectionView = UICollectionView(frame: CGRect.zero,
       collectionViewLayout: self.collectionViewLayout)
     collectionView.translatesAutoresizingMaskIntoConstraints = false
-    collectionView.backgroundColor = self.configuration.mainColor
+    collectionView.backgroundColor = self.configurations.mainColor
     collectionView.showsHorizontalScrollIndicator = false
     collectionView.dataSource = self
     collectionView.delegate = self
@@ -41,9 +41,9 @@ open class ImageGalleryView: UIView {
     }()
 
   lazy var collectionViewLayout: UICollectionViewLayout = { [unowned self] in
-    let layout = ImageGalleryLayout(configuration: self.configuration)
+    let layout = ImageGalleryLayout(configurations: self.configurations)
     layout.scrollDirection = .horizontal
-    layout.minimumInteritemSpacing = self.configuration.cellSpacing
+    layout.minimumInteritemSpacing = self.configurations.cellSpacing
     layout.minimumLineSpacing = 2
     layout.sectionInset = UIEdgeInsets.zero
 
@@ -54,7 +54,7 @@ open class ImageGalleryView: UIView {
     let view = UIView()
     view.translatesAutoresizingMaskIntoConstraints = false
     view.addGestureRecognizer(self.panGestureRecognizer)
-    view.backgroundColor = self.configuration.gallerySeparatorColor
+    view.backgroundColor = self.configurations.gallerySeparatorColor
 
     return view
     }()
@@ -68,9 +68,9 @@ open class ImageGalleryView: UIView {
 
   open lazy var noImagesLabel: UILabel = { [unowned self] in
     let label = UILabel()
-    label.font = self.configuration.noImagesFont
-    label.textColor = self.configuration.noImagesColor
-    label.text = self.configuration.noImagesTitle
+    label.font = self.configurations.noImagesFont
+    label.textColor = self.configurations.noImagesColor
+    label.text = self.configurations.noImagesTitle
     label.alpha = 0
     label.sizeToFit()
     self.addSubview(label)
@@ -90,9 +90,9 @@ open class ImageGalleryView: UIView {
 
   // MARK: - Initializers
 
-  public init(configuration: Configuration? = nil) {
-    if let configuration = configuration {
-      self.configuration = configuration
+  public init(configurations: Configurations? = nil) {
+    if let configurations = configurations {
+      self.configurations = configurations
     }
     super.init(frame: .zero)
     configure()
@@ -108,14 +108,14 @@ open class ImageGalleryView: UIView {
   }
 
   func configure() {
-    backgroundColor = configuration.mainColor
+    backgroundColor = configurations.mainColor
 
     collectionView.register(ImageGalleryViewCell.self,
                             forCellWithReuseIdentifier: CollectionView.reusableIdentifier)
 
     [collectionView, topSeparator].forEach { addSubview($0) }
 
-    topSeparator.addSubview(configuration.indicatorView)
+    topSeparator.addSubview(configurations.indicatorView)
 
     imagesBeforeLoading = 0
     fetchPhotos()
@@ -134,8 +134,8 @@ open class ImageGalleryView: UIView {
     let collectionFrame = frame.height == Dimensions.galleryBarHeight ? 100 + Dimensions.galleryBarHeight : frame.height
     topSeparator.frame = CGRect(x: 0, y: 0, width: totalWidth, height: Dimensions.galleryBarHeight)
     topSeparator.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleWidth]
-    configuration.indicatorView.frame = CGRect(x: (totalWidth - configuration.indicatorWidth) / 2, y: (topSeparator.frame.height - configuration.indicatorHeight) / 2,
-      width: configuration.indicatorWidth, height: configuration.indicatorHeight)
+    configurations.indicatorView.frame = CGRect(x: (totalWidth - configurations.indicatorWidth) / 2, y: (topSeparator.frame.height - configurations.indicatorHeight) / 2,
+      width: configurations.indicatorWidth, height: configurations.indicatorHeight)
     collectionView.frame = CGRect(x: 0, y: topSeparator.frame.height, width: totalWidth, height: collectionFrame - topSeparator.frame.height)
     collectionSize = CGSize(width: collectionView.frame.height, height: collectionView.frame.height)
     noImagesLabel.center = CGPoint(x: bounds.width / 2, y: (bounds.height + Dimensions.galleryBarHeight) / 2)
@@ -160,7 +160,7 @@ open class ImageGalleryView: UIView {
   // MARK: - Photos handler
 
   func fetchPhotos(_ completion: (() -> Void)? = nil) {
-    AssetManager.fetch(withConfiguration: configuration) { assets in
+    AssetManager.fetch(withConfiguration: configurations) { assets in
       self.assets.removeAll()
       self.assets.append(contentsOf: assets)
       self.collectionView.reloadData()
@@ -214,7 +214,7 @@ extension ImageGalleryView: UICollectionViewDelegate {
   public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     guard let cell = collectionView.cellForItem(at: indexPath)
       as? ImageGalleryViewCell else { return }
-    if configuration.allowMultiplePhotoSelection == false {
+    if configurations.allowMultiplePhotoSelection == false {
       // Clear selected photos array
       for asset in self.selectedStack.assets {
         self.selectedStack.dropAsset(asset)
@@ -232,7 +232,7 @@ extension ImageGalleryView: UICollectionViewDelegate {
 
     let asset = assets[(indexPath as NSIndexPath).row]
 
-    AssetManager.resolveAsset(asset, size: CGSize(width: 100, height: 100), shouldPreferLowRes: configuration.useLowResolutionPreviewImage) { image in
+    AssetManager.resolveAsset(asset, size: CGSize(width: 100, height: 100), shouldPreferLowRes: configurations.useLowResolutionPreviewImage) { image in
       guard image != nil else { return }
 
       if cell.selectedImageView.image != nil {

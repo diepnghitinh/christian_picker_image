@@ -77,7 +77,7 @@ extension TopView {
       relatedBy: .equal, toItem: nil, attribute: .notAnAttribute,
       multiplier: 1, constant: 55))
 
-    if configuration.canRotateCamera {
+    if configurations.canRotateCamera {
       addConstraint(NSLayoutConstraint(item: rotateCamera, attribute: .right,
         relatedBy: .equal, toItem: self, attribute: .right,
         multiplier: 1, constant: Dimensions.rightOffset))

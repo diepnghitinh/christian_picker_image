@@ -2,10 +2,10 @@ import UIKit
 
 class ImageGalleryLayout: UICollectionViewFlowLayout {
 
-  let configuration: Configuration
+  let configurations: Configurations
 
-  init(configuration: Configuration) {
-    self.configuration = configuration
+  init(configurations: Configurations) {
+    self.configurations = configurations
     super.init()
   }
 
@@ -21,7 +21,7 @@ class ImageGalleryLayout: UICollectionViewFlowLayout {
     let newAttributes = attributes.map({ (attribute) -> UICollectionViewLayoutAttributes in
       // swiftlint:disable force_cast
       let newAttribute = attribute.copy() as! UICollectionViewLayoutAttributes
-      newAttribute.transform = configuration.rotationTransform
+      newAttribute.transform = configurations.rotationTransform
       return newAttribute
     })
 
