@@ -1,3 +1,6 @@
+## 0.1.15
+* Fix crash on iOS
+
 ## 0.1.14
 * Android fix onActivityResult
 
