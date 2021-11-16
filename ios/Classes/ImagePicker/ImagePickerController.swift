@@ -282,9 +282,9 @@ open class ImagePickerController: UIViewController {
   
   @objc func dismissIfNeeded() {
     // If only one image is requested and a push occures, automatically dismiss the ImagePicker
-    if imageLimit == 1 {
-      doneButtonDidPress()
-    }
+    // if imageLimit == 1 {
+    //   doneButtonDidPress()
+    // }
   }
 
   // MARK: - Helpers
