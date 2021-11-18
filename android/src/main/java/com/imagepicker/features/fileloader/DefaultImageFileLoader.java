@@ -138,7 +138,7 @@ public class DefaultImageFileLoader implements ImageFileLoader {
                     String path = cursor.getString(cursor.getColumnIndex(projection[2]));
 
                     File file = makeSafeFile(path);
-                    if (file == null) {
+                    if (file == null || file.length() < 100) {
                         continue;
                     }
 
