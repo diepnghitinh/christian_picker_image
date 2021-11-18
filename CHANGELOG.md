@@ -1,3 +1,6 @@
+## 0.1.16
+* Fix bug on Android
+
 ## 0.1.15
 * Fix crash on iOS
 
