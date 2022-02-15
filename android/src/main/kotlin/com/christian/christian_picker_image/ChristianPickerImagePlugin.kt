@@ -1,11 +1,18 @@
 package com.christian.christian_picker_image
 
+import androidx.annotation.NonNull
+
+import android.app.Application;
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import java.util.ArrayList
 import android.os.Environment
-//import com.christian.christian_picker_image.camera.CameraActivity
+
+import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
@@ -22,7 +29,13 @@ import com.imagepicker.model.Image
 /**
  * ChristianPickerImagePlugin
  */
-class ChristianPickerImagePlugin : MethodCallHandler, PluginRegistry.ActivityResultListener, PluginRegistry.RequestPermissionsResultListener {
+class ChristianPickerImagePlugin : MethodCallHandler, FlutterPlugin, ActivityAware, PluginRegistry.ActivityResultListener, PluginRegistry.RequestPermissionsResultListener {
+
+    private var pluginBinding: FlutterPluginBinding? = null
+    private lateinit var activityBinding: ActivityPluginBinding
+    private val CHANNEL = "christian_picker_image"
+
+    private var application: Application? = null
 
     private val view: FlutterView? = null
     private var pendingResult: Result? = null
@@ -30,7 +43,7 @@ class ChristianPickerImagePlugin : MethodCallHandler, PluginRegistry.ActivityRes
 
     private var context: Context? = null
     private var activity: Activity? = null
-    private var channel: MethodChannel? = null
+    private lateinit var channel: MethodChannel
     private var messenger: BinaryMessenger? = null
 
     private val REQUEST_CODE_CHOOSE = 1001
@@ -38,13 +51,64 @@ class ChristianPickerImagePlugin : MethodCallHandler, PluginRegistry.ActivityRes
 
     private val NumberOfImagesToSelect = 5
 
-    private constructor(_activity: Activity, _context: Context, _channel: MethodChannel, _messenger: BinaryMessenger) {
-        this.activity = _activity
-        this.context = _context
-        this.channel = _channel
-        this.messenger = _messenger
+    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        pluginBinding = flutterPluginBinding;
     }
 
+    override fun onDetachedFromEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        pluginBinding = null;
+    }
+
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        activityBinding = binding
+        setup(
+            pluginBinding!!.getBinaryMessenger(),
+            pluginBinding!!.getApplicationContext() as Application,
+            activityBinding.getActivity(),
+            null,
+            activityBinding
+        )
+    }
+
+    private fun setup(
+        messenger: BinaryMessenger,
+        _application: Application,
+        activity: Activity,
+        registrar: PluginRegistry.Registrar?,
+        activityBinding: ActivityPluginBinding
+    ) {
+        this.activity = activity
+        this.application = application
+        channel = MethodChannel(messenger, CHANNEL)
+        channel.setMethodCallHandler(this)
+        if (registrar != null) {
+            registrar.addActivityResultListener(this)
+            registrar.addRequestPermissionsResultListener(this)
+        } else {
+            // V2 embedding setup for activity listeners.
+            activityBinding.addActivityResultListener(this)
+            activityBinding.addRequestPermissionsResultListener(this)
+        }
+    }
+
+    override fun onDetachedFromActivity() {
+        tearDown()
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+        onDetachedFromActivity()
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        onAttachedToActivity(binding)
+    }
+
+    private fun tearDown() {
+        activityBinding.removeActivityResultListener(this)
+        activityBinding.removeRequestPermissionsResultListener(this)
+        channel.setMethodCallHandler(null)
+        application = null
+    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray): Boolean {
         return false
@@ -106,17 +170,6 @@ class ChristianPickerImagePlugin : MethodCallHandler, PluginRegistry.ActivityRes
         private val ENABLE_CAMERA = "enableCamera"
         private val REQUEST_CODE_CHOOSE = 1001
         private val REQUEST_CODE_GRANT_PERMISSIONS = 2001
-
-        /**
-         * Plugin registration.
-         */
-        @JvmStatic
-        fun registerWith(registrar: Registrar) {
-            val channel = MethodChannel(registrar.messenger(), "christian_picker_image")
-            val instance = ChristianPickerImagePlugin(registrar.activity(), registrar.context(), channel, registrar.messenger())
-            registrar.addActivityResultListener(instance);
-            channel.setMethodCallHandler(instance)
-        }
     }
 
 }
