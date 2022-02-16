@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ChristianPickerImage {
@@ -14,7 +13,7 @@ class ChristianPickerImage {
   }
 
   static Future<List<File>> pickImages({
-    @required int maxImages,
+    required int maxImages,
     enableGestures = true,
   }) async {
     
