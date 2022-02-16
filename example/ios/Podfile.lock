@@ -1,0 +1,37 @@
+PODS:
+  - Cache (5.3.0)
+  - christian_picker_image (0.0.1):
+    - Flutter
+    - Lightbox (~> 2.3.0)
+  - Flutter (1.0.0)
+  - Imaginary (4.3.1):
+    - Cache (~> 5.3.0)
+  - Lightbox (2.3.0):
+    - Imaginary (~> 4.0)
+
+DEPENDENCIES:
+  - christian_picker_image (from `.symlinks/plugins/christian_picker_image/ios`)
+  - Flutter (from `Flutter`)
+
+SPEC REPOS:
+  trunk:
+    - Cache
+    - Imaginary
+    - Lightbox
+
+EXTERNAL SOURCES:
+  christian_picker_image:
+    :path: ".symlinks/plugins/christian_picker_image/ios"
+  Flutter:
+    :path: Flutter
+
+SPEC CHECKSUMS:
+  Cache: 48762993ec44e1d93483c4d4a13edd18452326f4
+  christian_picker_image: 8ed2d966d546c439d06da1ce1673891a911ec0cc
+  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  Imaginary: 18c5bba364229eef383b925199db442e71d175e1
+  Lightbox: d317750e4132bfb871a5307cfe0a2c7d6a583c65
+
+PODFILE CHECKSUM: 7368163408c647b7eb699d0d788ba6718e18fb8d
+
+COCOAPODS: 1.11.2

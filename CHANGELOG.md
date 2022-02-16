@@ -1,3 +1,6 @@
+## 2.0.0
+* Upgrade to null-safe
+
 ## 0.1.16
 * Fix bug on Android
 
